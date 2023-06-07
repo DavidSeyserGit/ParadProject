@@ -23,6 +23,8 @@ class world {
         bool menu(player &actPlayer, Camel camel);           // with function pointer ? ->to move interact etc.
         void interact(player &actPlayer, int, Camel);    // for interacting with a patch
         void coinRegen();           // gets global value and
+        void EntitySpawn();
+
         //bool checkPos(player actPlayer); --- lost thought
     protected:
     private:
@@ -30,6 +32,7 @@ class world {
         patch wPatch[5][5];
         vector<Camel*> CamelVec;//
         int gloCoins;          //global gloCoins
+        int gloCamels;
 };
 
 

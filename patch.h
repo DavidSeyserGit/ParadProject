@@ -23,9 +23,9 @@ public:
 protected:
 private:
     void init();
-    enum CONTENT { DESERT, PLAIN , CITY , MILL , FIELD , OASIS , COIN, PLAYER};
-    const char symbols[8] = {'~', ' ','H', static_cast<char>(207), static_cast<char>(178), static_cast<char>(254), 'C', 'i'};
-    const int colors[8] = {239, 32,32,32,46, 41, 224, 12};
+    enum CONTENT { DESERT, PLAIN , CITY , MILL , FIELD , OASIS , COIN, PLAYER, CAMEl};
+    const char symbols[9] = {'~', ' ','H', static_cast<char>(207), static_cast<char>(178), static_cast<char>(254), 'C', 'i', 'U' };
+    const int colors[9] = {239, 32,32,32,46, 41, 224, 12, 230};
     bool isOasis;
     int patchMap[3][3] = {PLAIN,PLAIN,PLAIN,PLAIN,PLAIN,PLAIN,PLAIN,PLAIN,PLAIN};
     bool hasCity;

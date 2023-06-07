@@ -9,14 +9,17 @@
 
 class Camel: public entities{
 public:
+    Camel(int, int);
+    virtual ~Camel();
     int getXglo() override {return  xGlo;}
     int getYglo() override {return yGlo;}
     bool playerDetection(int PlayerX, int PlayerY);
 private:
-    int xGlo = 0;
-    int yGlo = 0;
-    int xLoc = 1;
-    int yLoc = 1;
+    int xGlo;
+    int yGlo;
+    const int xLoc = 1;
+    const int yLoc = 1;
+    int age;
 };
 
 #endif //PARADPROJEKT_MASTER_CAMEL_H
