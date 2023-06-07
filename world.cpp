@@ -16,6 +16,7 @@ const int world::goal = 50;
 // map gen by patch construction 5x5 patches with 3x3 fields so 5x3 = 15x15 playing field -> done in world.h and patch.cpp
 // currently all sizes are set and are not made variable (e.g. by using size init var.s)
 world::world(){
+    gloCamels = 0;
     gloCoins = 0;
     // loop and count coins (loc -> glo)
     for(int x = 0; x < 5; x++){
@@ -50,7 +51,7 @@ bool world::dice( int percentage){
 bool world::menu(player &actPlayer, Camel camel) {
     int choice = 0;
     int inOasis = wPatch[actPlayer.getYglo()][actPlayer.getXglo()].getIsOasis();
-    gloCamels = CamelVec.size(); //größe des vektors
+    int gloCamels = CamelVec.size(); //größe des vektors
     cout << inOasis << endl;
 	if(inOasis && actPlayer.getCoins() >= 2){       // 2 = price of one field
 		cout << "[0] move \t\t\t" << "current money: " << actPlayer.getCoins() <<"$" << endl;
@@ -110,7 +111,7 @@ void world::interact(player &actPlayer, int choice, Camel camel){
     switch(choice){
         case 0:
             actPlayer.move();
-            actPlayer.setSatiatedValue(camel.playerDetection(camel ,actPlayer.getXglo(), actPlayer.getYglo()));
+            actPlayer.setSatiatedValue(camel.playerDetection(actPlayer.getXglo(), actPlayer.getYglo()));
             // bool actPlayer.setSatiated() = camel.detect(actPlayer.getXglo(), actPlayer.getYglo());  -> check player and camel -> return boolean true = "is on me"
             //if() check coin pos in current patch and collect it ... reduce in patch memory and in global coin
             for(int paY = 0; paY < 5; paY++){           //iter over patch y
