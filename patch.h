@@ -23,7 +23,7 @@ public:
 protected:
 private:
     void init();
-    enum CONTENT { DESERT, PLAIN , CITY , MILL , FIELD , OASIS , COIN, PLAYER, CAMEl};
+    enum CONTENT { DESERT, PLAIN , CITY , MILL , FIELD , OASIS , COIN, PLAYER, CAMEL};
     const char symbols[9] = {'~', ' ','H', static_cast<char>(207), static_cast<char>(178), static_cast<char>(254), 'C', 'i', 'U' };
     const int colors[9] = {239, 32,32,32,46, 41, 224, 12, 230};
     bool isOasis;
