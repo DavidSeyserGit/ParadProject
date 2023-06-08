@@ -17,24 +17,30 @@ public:
     void incCoins(int);
     void move();
 
+    void setSatiatedValue(bool, int);               //setter for satiation when player kills camel
+    bool getSatiatedValue() const {return satiated;}//getter for satiation
+
+    void setIncome(int passedIncome){income = passedIncome;}
+    int getIncome(int passedIncome){return income;}
+
     int getXloc() const{return xCoord;}
     int getYloc() const{return yCoord;}
     int getXglo() const{return xCoordPa;}
     int getYglo() const{return yCoordPa;}
     int getCoins() const{return myCoins;}
-    void setSatiatedValue(bool, int);               //setter for satiation when player kills camel
-    bool getSatiatedValue() const {return satiated;}//getter for satiation
 protected:
-    int myCoins;
-    string charNam;
     void init();
+    string charNam;
+
+    int myCoins;
+    int income;
+    bool satiated;
 
     int xCoord;
     int yCoord;
     int xCoordPa;
     int yCoordPa;
-    bool satiated;
-private:
 };
+
 
 #endif //PARADProjekt_PLAYER_H

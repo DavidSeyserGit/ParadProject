@@ -14,7 +14,8 @@ void player::init(){
     charNam = "EMPTY";
     xCoordPa = 0;
     yCoordPa = 0;
-    myCoins = 10;
+    myCoins = 10;   //could be changed in dependency to difficulty modifier
+    income = 0;
 }
 
 player::player(){
@@ -69,10 +70,22 @@ void player::move(){
         --xCoordPa;
         xCoord = 2;
     }
-    if(yCoordPa < 0) yCoordPa = 0;
-    if(xCoordPa < 0) xCoordPa = 0;
-    if(yCoordPa > 4) yCoordPa = 4;
-    if(xCoordPa > 4) xCoordPa = 4;
+    if(yCoordPa < 0){
+        yCoordPa = 0;
+        yCoord = 0;
+    }
+    if(xCoordPa < 0){
+        xCoordPa = 0;
+        xCoord = 0;
+    }
+    if(yCoordPa > 4){
+        yCoordPa = 4;
+        yCoordPa = 2;
+    }
+    if(xCoordPa > 4){
+        xCoordPa = 4;
+        xCoord = 2;
+    }
 }
 void player::setSatiatedValue(bool satiation, int actRound) { //gets the value from Camel::playerDetection -> Ture : player detected -> player satiated
     static int munchTime = 0;

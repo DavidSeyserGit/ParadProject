@@ -10,11 +10,12 @@ HANDLE  hConsole;
 int patch::gloOasis = 0;
 
 void patch::init(){
-    this->isOasis = false;
-    this->hasCity = false;
-    this->mills = 0;
-    this->fields = 0;
-    this->paCoins = 0;
+    isOasis = false;
+    hasCity = false;
+    mills = 0;
+    fields = 0;
+    paCoins = 0;
+    paIncome = 0;
 }
 // world generates and calls this consructor for 25 times
 // it is decided if it is an "oasis" or "desert + coin"
@@ -52,8 +53,8 @@ void patch::printRow(int row, int playerColumn, int entity){
             SetConsoleTextAttribute(hConsole, colors[CAMEL]);  // !!
             cout << symbols[CAMEL] << " ";
         }else{                                      //if no entity -> pull field info from patchmap
-                SetConsoleTextAttribute(hConsole, colors[currField]);
-                cout << symbols[currField] << " ";
+            SetConsoleTextAttribute(hConsole, colors[currField]);
+            cout << symbols[currField] << " ";
         }
     }
     SetConsoleTextAttribute(hConsole, 7); // reset to std-out
@@ -76,8 +77,18 @@ bool patch::addCoin(){
     }while(true);
 }
 
- //-> all requests are internal
- //and receives as parameters player data (money ...)
+bool patch::getCoin(int x, int y){
+    if(coinMap[y][x]){
+        --paCoins;
+        coinMap[y][x] = false;
+        patchMap[y][x] = DESERT;
+        return true;
+    } else
+        return false;
+}
+
+//-> all requests are internal
+//and receives as parameters player data (money ...)
 // checks if enough money is available for option and prints options accordingly
 /*            [1] city  8 $ requires min. 2 fields
             * [2] mill  4 $ requires min. 1 field
@@ -85,36 +96,38 @@ bool patch::addCoin(){
             * [0] nevermind (exit)
             */
 int patch::build(int playerCoins){
-    int answer;
+    int answer = -1;
     bool optionIsAvailable[4] = {true,false,false,false}; 		//this exists to limit player choices depending on requirements
     int fieldPos[5] = {0,2,0,1,2};  //helps to place buildings
 
-    if(!(hasCity || playerCoins < 8 || fields < 2)){     // option to build city
+    if(!(hasCity || playerCoins < prices[1] || fields < 2)){     // option to build city
         cout << "[1] city \t" << "cost: " << prices[1] << "$ \t" << "requires min. 2 fields" << endl;
         optionIsAvailable[1] = true;
     }
-    if(!(mills == 2 || playerCoins < 4 || fields)){      // option to build mills
+    if(!(mills == 2 || playerCoins < prices[2] || !fields)){      // option to build mills
         cout << "[2] mill \t" << "cost: " << prices[2] << "$ \t" << "requires min. 1 field" << endl;
         optionIsAvailable[2] = true;
     }
-    if(!(fields == 5 || playerCoins < 2)){               // it seemed easyier to make positive logic and negating it
+    if(!(fields == 5 || playerCoins < prices[3])){               // it seemed easyier to make positive logic and negating it
         cout << "[3] field \t" << "cost: " << prices[3] << "$ \t" << endl;
         optionIsAvailable[3] = true;
     }
     cout << "[0] nevermind (exit) \t"  << endl;
-    cout << "Answer:  ";
-    while(true){
-        std::cin >> answer;
-        if(optionIsAvailable[answer]) break;
-        else {
-            cout << "check input !" << endl; //--- this is also not clean
-            std::cin.clear();
-        }
+
+    if(playerCoins < 2)
+        answer = 0;
+
+    while(!((answer < 4 && answer > -1) && optionIsAvailable[answer])){
+        cout << "Answer:  ";
+        string temp;
+        cin >> temp;
+        answer = static_cast<int>(temp[0]) - 48;
+        cin.clear();
+        cout << endl;
     }
-    cout << endl;
 
     switch(answer){
-        case 0:
+        case 0:     //did not use default on "0" since it s a valid answer
             break;
         case 1:
             hasCity = true;
@@ -132,8 +145,9 @@ int patch::build(int playerCoins){
             ++fields;
             break;
         default:
-            return 0;
+            cout << "You should not be in here .... what did you do? \n ERROR patch::build" << endl;
+            break;
     }
-    income = hasCity * 4 + (mills * mills + 1) * fields; // difficulty modifier could be implemented here
+    paIncome = hasCity * 4 + (mills * mills + 1) * fields; //could be changed in dependency to difficulty modifier
     return prices[answer];
 }
