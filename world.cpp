@@ -18,6 +18,7 @@ const int world::goal = 50;
 world::world(){
     gloCamels = 0;
     gloCoins = 0;
+    endlessMode = false;
     // count coins and init camelpos
     for(int x = 0; x < 5; x++){
         for(int y = 0; y < 5; y++){
@@ -98,13 +99,16 @@ bool world::menu(player &actPlayer) {
 
     interact(actPlayer, choice);
     if (gloCoins < 35) coinRegen();       // would like to use "35" -> this->goal / 2 + x (x=10) -> could be changed in dependency to difficulty modifier
-    if(actPlayer.getCoins() >= goal){
-        cout << "You won !" << endl << "Congratulations !" << endl;
-        return true;
-    }
-    if(actPlayer.getCoins() < 0){
-        cout << "You lost !" << endl << "Better luck next time !" << endl;
-        return true;
+
+    if(!endlessMode){
+        if(actPlayer.getCoins() >= goal){
+            cout << "You won !" << endl << "Congratulations !" << endl;
+            return true;
+        }
+        if(actPlayer.getCoins() < 0){
+            cout << "You lost !" << endl << "Better luck next time !" << endl;
+            return true;
+        }
     }
     return false; // nothing happens -> game continues
 }
@@ -115,7 +119,7 @@ void world::interact(player &actPlayer, int choice){
     moves++;
     //every sixth move player needs to buy food -> could be changed in dependency to difficulty modifier
     if(!(moves % 6)){
-        if( !actPlayer.getSatiatedValue()) actPlayer.incCoins(-3);
+        if( !actPlayer.getSatiatedValue()) actPlayer.incCoins(-2);
         actPlayer.incCoins(actPlayer.getIncome());
     }
 

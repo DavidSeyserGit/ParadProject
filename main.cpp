@@ -14,6 +14,15 @@ int main() {
 
     while(!finished){
         finished = w1.menu(actPlayer);
+        if(finished){
+            int answer;
+            cout << "Do you want to continue to endless mode ? ";
+            cin >> answer;
+            if(answer == static_cast<int>('Y') || answer == static_cast<int>('y') || answer == 1){
+                w1.setEndlessMode();
+                finished = false;
+            }
+        }
     }
 
     return 0;
