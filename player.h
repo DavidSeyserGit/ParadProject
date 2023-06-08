@@ -22,8 +22,8 @@ public:
     int getXglo() const{return xCoordPa;}
     int getYglo() const{return yCoordPa;}
     int getCoins() const{return myCoins;}
-    void setSatiatedValue(bool, int);//setter for satiation when player kills camel
-    bool getSatiatedValue() const {return satiated;}//setter for satiation when player kills camel
+    void setSatiatedValue(bool, int);               //setter for satiation when player kills camel
+    bool getSatiatedValue() const {return satiated;}//getter for satiation
 protected:
     int myCoins;
     string charNam;

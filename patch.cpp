@@ -30,7 +30,7 @@ patch::patch() { //default
     else{
         for(int y = 0; y < 3; y++){
             for(int x = 0; x < 3; x++) {
-                patchMap[x][y] = DESERT;
+                patchMap[y][x] = DESERT;
             }
         }
         addCoin();
@@ -39,17 +39,21 @@ patch::patch() { //default
 
 //prints the current row of a patch ... is used by world::interaction
 //pl.Column to print player in this row
-void patch::printRow(int row, int playerColumn){
+// entity: 0 = player, 1 = camel
+void patch::printRow(int row, int playerColumn, int entity){
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE); //init console
 
-    for(int column = 0; column < 3; column++){ //iterate over columns
-        int currField = patchMap[column][row];
-        if(column == playerColumn) {      //exception if column = player Position
+    for(int column = 0; column < 3; column++){      //iterate over columns
+        int currField = patchMap[row][column];
+        if(column == playerColumn && entity == 0) {     //exception if column = player Position... also checks entity
             SetConsoleTextAttribute(hConsole, colors[PLAYER]);  // !!
             cout << symbols[PLAYER] << " ";
-        }else{
-            SetConsoleTextAttribute(hConsole, colors[currField]);
-            cout << symbols[currField] << " ";
+        } else if (column == 1 && entity == 1){          //if other entities exist -> change if else clauses to "=="
+            SetConsoleTextAttribute(hConsole, colors[CAMEL]);  // !!
+            cout << symbols[CAMEL] << " ";
+        }else{                                      //if no entity -> pull field info from patchmap
+                SetConsoleTextAttribute(hConsole, colors[currField]);
+                cout << symbols[currField] << " ";
         }
     }
     SetConsoleTextAttribute(hConsole, 7); // reset to std-out
@@ -72,28 +76,64 @@ bool patch::addCoin(){
     }while(true);
 }
 
-void patch::build(int buildtype){
-    int fieldPos[5] = {0,2,0,1,2};
-	switch(buildtype){
-		case 1:
-			hasCity = true;
+ //-> all requests are internal
+ //and receives as parameters player data (money ...)
+// checks if enough money is available for option and prints options accordingly
+/*            [1] city  8 $ requires min. 2 fields
+            * [2] mill  4 $ requires min. 1 field
+            * [3] field 2 $
+            * [0] nevermind (exit)
+            */
+int patch::build(int playerCoins){
+    int answer;
+    bool optionIsAvailable[4] = {true,false,false,false}; 		//this exists to limit player choices depending on requirements
+    int fieldPos[5] = {0,2,0,1,2};  //helps to place buildings
+
+    if(!(hasCity || playerCoins < 8 || fields < 2)){     // option to build city
+        cout << "[1] city \t" << "cost: " << prices[1] << "$ \t" << "requires min. 2 fields" << endl;
+        optionIsAvailable[1] = true;
+    }
+    if(!(mills == 2 || playerCoins < 4 || fields)){      // option to build mills
+        cout << "[2] mill \t" << "cost: " << prices[2] << "$ \t" << "requires min. 1 field" << endl;
+        optionIsAvailable[2] = true;
+    }
+    if(!(fields == 5 || playerCoins < 2)){               // it seemed easyier to make positive logic and negating it
+        cout << "[3] field \t" << "cost: " << prices[3] << "$ \t" << endl;
+        optionIsAvailable[3] = true;
+    }
+    cout << "[0] nevermind (exit) \t"  << endl;
+    cout << "Answer:  ";
+    while(true){
+        std::cin >> answer;
+        if(optionIsAvailable[answer]) break;
+        else {
+            cout << "check input !" << endl; //--- this is also not clean
+            std::cin.clear();
+        }
+    }
+    cout << endl;
+
+    switch(answer){
+        case 0:
+            break;
+        case 1:
+            hasCity = true;
             patchMap[0][0] = CITY;
-			break;
-		case 2:
-			++mills;
+            break;
+        case 2:
+            ++mills;
             patchMap[0][mills] = MILL;
-			break;
+            break;
         case 3:
             if(fields < 2)
                 patchMap[1][fieldPos[fields]] = FIELD;
             else
                 patchMap[2][fieldPos[fields]] = FIELD;
             ++fields;
-            //patchMap[0][fields] = MILL;
-			break;
-		default:
-			cout << "Something went terribly wrong! \t you should not be here ! \n ERROR UwU patch::build" << endl;
-			return;
-	}
-	income = hasCity * 4 + (mills * mills + 1) * fields; // difficulty modifier could be implemented here
+            break;
+        default:
+            return 0;
+    }
+    income = hasCity * 4 + (mills * mills + 1) * fields; // difficulty modifier could be implemented here
+    return prices[answer];
 }

@@ -18,12 +18,14 @@ const int world::goal = 50;
 world::world(){
     gloCamels = 0;
     gloCoins = 0;
-    // loop and count coins (loc -> glo)
+    // loop and count coins (loc -> glo) and set camel positions to false (no camels present on launch)
     for(int x = 0; x < 5; x++){
         for(int y = 0; y < 5; y++){
+            camelPos[y][x] = false;
             if(! wPatch[y][x].getIsOasis()) gloCoins++;
         }
     }
+
 }
 // destructor
 world::~world(){}
@@ -34,8 +36,11 @@ void world::temp_PrintMap(player actPlayer){
             for(int paX = 0; paX < 5; paX++){   //iter over patch x
                 //checks if player pos on curr patch (row -> then passes x|column -pos)
                 if(actPlayer.getXglo() == paX && actPlayer.getYglo() == paY && actPlayer.getYloc() == row)
-                    wPatch[paY][paX].printRow(row, actPlayer.getXloc()); //passes x pos of player
-                else wPatch[paY][paX].printRow(row, -1); //ignore player pos.
+                    wPatch[paY][paX].printRow(row, actPlayer.getXloc(), 0); //passes x pos of player
+                else if (camelPos[paY][paX] && row == 1)
+                    wPatch[paY][paX].printRow(row, -1, 1);
+                else
+                    wPatch[paY][paX].printRow(row, -1,-1); //ignore player pos.
             }
             cout << endl; //next line on terminal -> next row from patches of curr y-pos (paY)
         }
@@ -52,7 +57,7 @@ bool world::menu(player &actPlayer) {
     int choice = 0;
     int inOasis = wPatch[actPlayer.getYglo()][actPlayer.getXglo()].getIsOasis();
     int gloCamels = CamelVec.size(); //größe des vektors
-    cout << inOasis << endl;
+    
 	if(inOasis && actPlayer.getCoins() >= 2){       // 2 = price of one field
 		cout << "[0] move \t\t\t" << "current money: " << actPlayer.getCoins() <<"$" << endl;
 		cout << "current position \t\t x | y: "     << actPlayer.getXloc() + 3*actPlayer.getXglo() << " | "
@@ -83,7 +88,10 @@ bool world::menu(player &actPlayer) {
 													<< actPlayer.getYloc()+1 + 3*actPlayer.getYglo() << endl;
 		choice = 0;
 	}
-	int chance = 12-gloCamels/2; // could later be modified by hardness modifier
+
+    camelPos[1][1] = true; // --- for test purposes
+    //uses int rounding 0 - (max) 24 camels -> 12 -(0 - 12) chance-% => the more camels the lower chance
+	int chance = 12 - gloCamels / 2; // could later be modified by hardness modifier
     if (dice(chance))
         EntitySpawn();
 
@@ -106,7 +114,6 @@ void world::interact(player &actPlayer, int choice){
     moves++;
     //hunger_removed
     if(!(moves % 6) && !actPlayer.getSatiatedValue()) actPlayer.incCoins(-3);  //every sixth move player needs to buy food -> later controlled by difficulty modifier
-    // && !actPlayer.getSatiated()
 
     switch(choice){
         case 0:
@@ -120,86 +127,46 @@ void world::interact(player &actPlayer, int choice){
                     for(int paX = 0; paX < 5; paX++){   //iter over patch x
                         //checks if player pos on curr patch (row -> then passes x|column -pos)
                         if(actPlayer.getXglo() == paX && actPlayer.getYglo() == paY && actPlayer.getYloc() == row)
-                            wPatch[paY][paX].printRow(row, actPlayer.getXloc()); //passes x pos of player
-                        else wPatch[paY][paX].printRow(row, -1); //ignore player pos.
+                            wPatch[paY][paX].printRow(row, actPlayer.getXloc(), 0); //passes x pos of player
+                        else if (camelPos[paY][paX] && row == 1)
+                            wPatch[paY][paX].printRow(row, -1, 1);
+                        else
+                            wPatch[paY][paX].printRow(row, -1,-1); //ignore player pos.
                     }	// --- implement coin gathering !!! actPlayer.incCoins() ...
                     cout << endl; //next line on terminal -> next row from patches of curr y-pos (paY)
                 }
             }
+
             break;
         case 1:
-			/* whole while loop could be moved to "patch".build() -> is calles by pointer originating from player position
-			 *-> all requests are internal 
-			 * and receives as parameters player data (money ...)
-			 */
-			/* this is a submenu ... hooray
-            * ... request player money and present menu for building like:
-            * checks if enough money is available for option and prints options accordingly
-            * there is potential to move or reduce this "function"
-            *
-            */
-			int answer = -1;
+            int price = 0;
+            char answer;
+			do{
+                answer = 'n';   // to reset last answer
 
-            // something wrong money / bulid _> can build with not all requirements true
-			while(answer){
-                temp_PrintMap(actPlayer);
-                bool optionIsAvailable[4] = {false,false,false,false}; 		//this exists to limit player choices depending on requirements
-				int money = actPlayer.getCoins();
+                temp_PrintMap(actPlayer);   //so player can see changes
+                patch *actPatch = &wPatch[actPlayer.getYglo()][actPlayer.getXglo()];    //points to patch player is standing on
+                price = (*actPatch).build(actPlayer.getCoins());   //opens build menu which returns price for ordered building
+                actPlayer.incCoins(price);          //lowers player money
 
-				patch *actPatch = &wPatch[actPlayer.getYglo()][actPlayer.getXglo()];        //--- how to write a pointer to this patch in world class
-
-                if(!((*actPatch).getHasCity() || money < 8 || (*actPatch).getFields() < 2)) {      // option to build city is red
-					cout << "[1] city \t" << "cost: 8 $ \t" << "requires min. 2 fields" << endl; // 8 $ | 2 fields -> variable instead?
-					optionIsAvailable[1] = true;
-				}
-				if(!((*actPatch).getMills() == 2 || money < 4 || !(*actPatch).getFields())){   // option to build mills is red
-					cout << "[2] mill \t" << "cost: 4 $ \t" << "requires min. 1 field" << endl;
-					optionIsAvailable[2] = true;
-				}
-				if(!((*actPatch).getFields() == 5 || money < 2)){  // it seemed easyier to make positive logic and negating it
-					cout << "[3] field \t" << "cost: 2 $ \t" << endl;
-					optionIsAvailable[3] = true;
-				}
-				cout << "[0] nevermind (exit) \t"  << endl;
-                while(true){
-                    cout << "Answere:  ";
-                    if (std::cin >> answer) break;
+                while(price){ //since build menu returns "0" (false) if no building is build it is assumed, that player does not want to continue building
+                    cout << "Do you want to build another building? [y/n]:  ";
+                    if (std::cin >> answer && (answer == 'y' || answer == 'n'))
+                        break;
                     else {
+                        cout << "check input !" << endl; //--- this is also not clean
                         std::cin.clear();
                     }
-                    cout << endl;
                 }
-				cout << endl;
-				if(optionIsAvailable[answer]){
-                    (*actPatch).build(answer);
-				} else if(!optionIsAvailable[1] && !optionIsAvailable[2] && !optionIsAvailable[3]) //auto exit
-                    break;
-                else
-                    cout  << endl << "Wrong input! \t"  << endl; // --- maybe delete this -> does not fit design
-			}
-			
-			//actPlayer. lost thought
-
-            /* [1] city  8 $ requires min. 2 fields
-            * [2] mill  4 $ requires min. 1 field
-            * [3] field 2 $
-            * [0] nevermind (exit) --> move instead ? so put it in loop in this func(large) or in "menu"(return value needed)
-            * building menu in a loop (user input)
-            * do not forget to lower player money
-            * access patch and build structure
-            *   func needed   --> (patch) for adding buildings
-            *                 --> (patch) for checking if building is present (or just use a variable... easier)
-            *                 --> (player) for player money (... already written)
-            */
+			}while(answer == 'y');
              break;
-        /*default: // --- dows not want to work
+        /*default: // --- does not want to work
             cout << "You should not be in here .... what did you do? \n ERROR world::interact" << endl;
             break;*/
     }
 }
 
 // generates coins on a patch while not causing overflows
-//
 void world::coinRegen() {
     bool hasSpace = false; //if 9/9 gloCoins in a patch -> to get loop going and wait on return of addCoin()
     do {
@@ -217,10 +184,10 @@ void world::EntitySpawn(){
     do{
         int rand1 = rand() % 5; // generates values between 0 and 4
         int rand2 = rand() % 5;
-        if(!wPatch[rand1][rand2].getIsOasis()){
+        if(!wPatch[rand2][rand1].getIsOasis()){
             for(Camel* camel : CamelVec)
             {
-                wPatch[rand1][rand2].getIsOasis();
+                wPatch[rand2][rand1].getIsOasis();
                 int CamelPosX = camel->getXglo();
                 int CamelPosY = camel->getYglo();
 
@@ -232,8 +199,9 @@ void world::EntitySpawn(){
         }
 
         if(!hasEntity){
-            auto* camel1 = new Camel(rand1, rand2);
-            CamelVec.push_back(camel1);
+            auto* camel1 = new Camel(rand1, rand2); // Camel(x, y)
+            CamelVec.push_back(camel1);             // inserts new camel address into vector
+            camelPos[rand2][rand1] = true;         // array pos is alwys arr[y][x]
         }
     }while(hasEntity);
 }
@@ -245,6 +213,7 @@ bool world::CamelDetect(player& actplayer) {
         int CamelPosY = camel->getYglo();
 
         if (CamelPosX == actplayer.getXglo() && CamelPosY == actplayer.getYglo()) {
+            cout << "\n Player ate a camel... Jummy ... saturated for 6 rounds" << endl;    // could later be changed to "rounds" instead of "6"
             delete camel; //everytime the player is on the same patch as the camel it gets delete
             CamelVec.erase(it);
             return true;

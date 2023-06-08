@@ -33,8 +33,9 @@ class world {
         static const int goal;      // gloCoins to finish game
         patch wPatch[5][5];
         vector<Camel*> CamelVec;//
-        int gloCoins;          //global gloCoins
+        int gloCoins;           //global gloCoins
         int gloCamels;
+        bool camelPos[5][5];    //shows true on global map if camel is present
 };
 
 

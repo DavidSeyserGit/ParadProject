@@ -3,18 +3,25 @@
 //
 
 #include "Camel.h"
+
+
+void Camel::init (){
+    age = 0;
+}
+
 Camel::Camel(int gloX, int gloY) {
+    init();
     xGlo = gloX;
     yGlo = gloY;
-    age = 0;
 }
 
 Camel::~Camel(){
 }
 
-bool Camel::playerDetection(int PlayerX, int PlayerY){
-    if(getXglo() == PlayerX && getYglo() == PlayerY){
-        return true;
-    } else return false;
 
+bool Camel::playerDetection(int PlayerX, int PlayerY){
+    if(getXglo() == PlayerX && getYglo() == PlayerY)
+        return true;
+    else
+        return false;
 }
