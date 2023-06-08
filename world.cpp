@@ -11,7 +11,7 @@
 #include <ctime>
 
 using namespace std;
-const int world::goal = 50;
+const int world::goal = 100;
 // constructor
 // map gen by patch construction 5x5 patches with 3x3 fields so 5x3 = 15x15 playing field -> done in world.h and patch.cpp
 // currently all sizes are set and are not made variable (e.g. by using size init var.s)
@@ -29,7 +29,7 @@ world::world(){
 }
 // destructor
 world::~world(){}
-void world::printMap(player actPlayer){
+void world::printMap(player& actPlayer){
     cout << endl;
     for(int paY = 0; paY < 5; paY++){           //iter over patch y
         for(int row = 0; row < 3; row++){       //iter over local row
@@ -93,7 +93,7 @@ bool world::menu(player &actPlayer) {
     }
 
     //uses int rounding 0 - (max) 24 camels -> 12 -(0 - 12) chance-% => the more camels the lower chance
-    int chance = 12 - gloCamels / 2; //could be changed in dependency to difficulty modifier
+    int chance = 5 - gloCamels / 2; //could be changed in dependency to difficulty modifier
     if (dice(chance))
         EntitySpawn();
 
@@ -119,7 +119,7 @@ void world::interact(player &actPlayer, int choice){
     moves++;
     //every sixth move player needs to buy food -> could be changed in dependency to difficulty modifier
     if(!(moves % 6)){
-        if( !actPlayer.getSatiatedValue()) actPlayer.incCoins(-2);
+        if( !actPlayer.getSatiatedValue()) actPlayer.incCoins(-3);
         actPlayer.incCoins(actPlayer.getIncome());
     }
 
@@ -216,6 +216,7 @@ bool world::CamelDetect(player& actplayer) {
         if (CamelPosX == actplayer.getXglo() && CamelPosY == actplayer.getYglo()) { //everytime the player is on the same patch as the camel it gets deleted
             cout << "\n Player ate a camel... Jummy ... saturated for 6 rounds" << endl;    // could later be changed to "rounds" instead of "6"
             delete camel;              //camel delete on current gloX && gloY
+            camelPos[CamelPosY][CamelPosX] = false;
             CamelVec.erase(it); //camel pointer deleted
             return true;
         }

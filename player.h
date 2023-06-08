@@ -21,7 +21,7 @@ public:
     bool getSatiatedValue() const {return satiated;}//getter for satiation
 
     void setIncome(int passedIncome){income = passedIncome;}
-    int getIncome(int passedIncome){return income;}
+    int getIncome(){return income;}
 
     int getXloc() const{return xCoord;}
     int getYloc() const{return yCoord;}

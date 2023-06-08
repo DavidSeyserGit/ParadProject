@@ -18,7 +18,7 @@ public:
     world();
     virtual ~world();
 
-    void printMap(player actPlayer);
+    void printMap(player& actPlayer);
     bool dice(int);             // dice on isOasis and hasCoin and ...
     bool menu(player &actPlayer);           // with function pointer ? ->to move interact etc.
     void interact(player &actPlayer, int);    // for interacting with a patch
