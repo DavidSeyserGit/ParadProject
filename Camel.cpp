@@ -3,13 +3,16 @@
 //
 
 #include "Camel.h"
-#include "CamelAdult.h"
 Camel::Camel(int gloX, int gloY) {
     xGlo = gloX;
     yGlo = gloY;
     age = 0;
 }
-bool entities::playerDetection(int PlayerX, int PlayerY){
+
+Camel::~Camel(){
+}
+
+bool Camel::playerDetection(int PlayerX, int PlayerY){
     if(getXglo() == PlayerX && getYglo() == PlayerY){
         return true;
     } else return false;

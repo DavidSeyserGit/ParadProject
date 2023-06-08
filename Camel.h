@@ -23,4 +23,5 @@ protected:
     int age;
 };
 
+
 #endif //PARADPROJEKT_MASTER_CAMEL_H

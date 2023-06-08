@@ -10,7 +10,6 @@
 #include "patch.h"
 #include "player.h"
 #include "Camel.h"
-#include "CamelAdult.h"
 #include <vector>
 using namespace std;
 
@@ -21,17 +20,19 @@ class world {
 
         void temp_PrintMap(player actPlayer);
         bool dice(int);             // dice on isOasis and hasCoin and ...
-        bool menu(player &actPlayer, Camel camel);           // with function pointer ? ->to move interact etc.
-        void interact(player &actPlayer, int, Camel);    // for interacting with a patch
+        bool menu(player &actPlayer);           // with function pointer ? ->to move interact etc.
+        void interact(player &actPlayer, int);    // for interacting with a patch
         void coinRegen();           // gets global value and
         void EntitySpawn();
+        bool CamelDetect(player& actplayer);
+
 
         //bool checkPos(player actPlayer); --- lost thought
     protected:
     private:
         static const int goal;      // gloCoins to finish game
         patch wPatch[5][5];
-        vector<CamelAdult*> CamelVec;//
+        vector<Camel*> CamelVec;//
         int gloCoins;          //global gloCoins
         int gloCamels;
 };

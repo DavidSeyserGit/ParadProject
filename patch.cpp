@@ -83,7 +83,7 @@ void patch::build(int buildtype){
 			++mills;
             patchMap[0][mills] = MILL;
 			break;
-		case 3:
+        case 3:
             if(fields < 2)
                 patchMap[1][fieldPos[fields]] = FIELD;
             else

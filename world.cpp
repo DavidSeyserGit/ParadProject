@@ -5,8 +5,7 @@
 #include "world.h"
 #include "player.h"
 #include "patch.h"
-#include "camel.h"
-#include "CamelAdult.h"
+#include "Camel.h"
 // #include <windows.h>   // WinApi header for output
 #include <iostream>
 #include <ctime>
@@ -49,7 +48,7 @@ bool world::dice( int percentage){
 }
 // displays the action menu to the player
 //  -> in the future it will have to be a more advanced logic
-bool world::menu(player &actPlayer, Camel camel) {
+bool world::menu(player &actPlayer) {
     int choice = 0;
     int inOasis = wPatch[actPlayer.getYglo()][actPlayer.getXglo()].getIsOasis();
     int gloCamels = CamelVec.size(); //größe des vektors
@@ -88,7 +87,7 @@ bool world::menu(player &actPlayer, Camel camel) {
     if (dice(chance))
         EntitySpawn();
 
-    interact(actPlayer, choice, camel);
+    interact(actPlayer, choice);
     if (gloCoins < 35) coinRegen();       // would like to use "35" -> this->goal / 2 + x (x=10) -> later controlled by difficulty modifier
     if(actPlayer.getCoins() >= goal){
         cout << "You won !" << endl << "Congratulations !" << endl;
@@ -102,7 +101,7 @@ bool world::menu(player &actPlayer, Camel camel) {
 }
 
 // interaction with world menu passes choice -> 0=move 1=build
-void world::interact(player &actPlayer, int choice, Camel camel){
+void world::interact(player &actPlayer, int choice){
     int static moves = 0;
     moves++;
     //hunger_removed
@@ -112,8 +111,9 @@ void world::interact(player &actPlayer, int choice, Camel camel){
     switch(choice){
         case 0:
             actPlayer.move();
-            actPlayer.setSatiatedValue(camel.playerDetection(actPlayer.getXglo(), actPlayer.getYglo()));
-            // bool actPlayer.setSatiated() = camel.detect(actPlayer.getXglo(), actPlayer.getYglo());  -> check player and camel -> return boolean true = "is on me"
+            actPlayer.setSatiatedValue(CamelDetect(actPlayer), moves);//-> check player and camel -> return boolean true = "is on me"
+            //camel delete on current gloX && gloY
+
             //if() check coin pos in current patch and collect it ... reduce in patch memory and in global coin
             for(int paY = 0; paY < 5; paY++){           //iter over patch y
                 for(int row = 0; row < 3; row++){       //iter over local row
@@ -218,24 +218,38 @@ void world::EntitySpawn(){
         int rand1 = rand() % 5; // generates values between 0 and 4
         int rand2 = rand() % 5;
         if(!wPatch[rand1][rand2].getIsOasis()){
-            for(CamelAdult* camel : CamelVec)
+            for(Camel* camel : CamelVec)
             {
                 wPatch[rand1][rand2].getIsOasis();
                 int CamelPosX = camel->getXglo();
                 int CamelPosY = camel->getYglo();
 
-                if (CamelPosX == rand1 && CamelPosY == rand2) hasEntity = true;
-                else hasEntity = false;
+                if (CamelPosX == rand1 && CamelPosY == rand2){
+                    hasEntity = true;
+                    break;
+                }
             }
         }
 
         if(!hasEntity){
             auto* camel1 = new Camel(rand1, rand2);
-            CamelVec.push_back(new CamelAdult());
+            CamelVec.push_back(camel1);
         }
     }while(hasEntity);
+}
 
+bool world::CamelDetect(player& actplayer) {
+    for (auto it = CamelVec.begin(); it != CamelVec.end(); ++it) {
+        Camel* camel = *it;
+        int CamelPosX = camel->getXglo();
+        int CamelPosY = camel->getYglo();
 
-
+        if (CamelPosX == actplayer.getXglo() && CamelPosY == actplayer.getYglo()) {
+            delete camel; //everytime the player is on the same patch as the camel it gets delete
+            CamelVec.erase(it);
+            return true;
+        }
+    }
+    return false;
 }
 

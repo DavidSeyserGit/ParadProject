@@ -74,8 +74,14 @@ void player::move(){
     if(yCoordPa > 4) yCoordPa = 4;
     if(xCoordPa > 4) xCoordPa = 4;
 }
-bool player::setSatiatedValue(bool satiation) { //gets the value from Camel::playerDetection -> Ture : player detected -> player satiated
+void player::setSatiatedValue(bool satiation, int actRound) { //gets the value from Camel::playerDetection -> Ture : player detected -> player satiated
+    static int munchTime = 0; //round in which camel gets feeded to player
     if (satiation) {
-        return true;
-    } else return false;
+        satiated = satiation;
+        munchTime = actRound;
+    }
+    if((actRound - munchTime) >= 6 && satiated){
+        satiated = false;
+    }
+
 }
