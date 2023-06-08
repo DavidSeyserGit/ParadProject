@@ -89,7 +89,6 @@ bool world::menu(player &actPlayer) {
 		choice = 0;
 	}
 
-    camelPos[1][1] = true; // --- for test purposes
     //uses int rounding 0 - (max) 24 camels -> 12 -(0 - 12) chance-% => the more camels the lower chance
 	int chance = 12 - gloCamels / 2; // could later be modified by hardness modifier
     if (dice(chance))
@@ -179,15 +178,16 @@ void world::coinRegen() {
 }
 
 void world::EntitySpawn(){
+    int cnt = 0;
     bool hasEntity = false;
 
     do{
+        cnt++;
         int rand1 = rand() % 5; // generates values between 0 and 4
         int rand2 = rand() % 5;
-        if(!wPatch[rand2][rand1].getIsOasis()){
+        if(!(wPatch[rand2][rand1].getIsOasis())){
             for(Camel* camel : CamelVec)
             {
-                wPatch[rand2][rand1].getIsOasis();
                 int CamelPosX = camel->getXglo();
                 int CamelPosY = camel->getYglo();
 
@@ -196,12 +196,15 @@ void world::EntitySpawn(){
                     break;
                 }
             }
+            if(!hasEntity ){
+                auto* camel1 = new Camel(rand1, rand2); // Camel(x, y)
+                CamelVec.push_back(camel1);             // inserts new camel address into vector
+                camelPos[rand2][rand1] = true;         // array pos is alwys arr[y][x]
+            }
         }
-
-        if(!hasEntity){
-            auto* camel1 = new Camel(rand1, rand2); // Camel(x, y)
-            CamelVec.push_back(camel1);             // inserts new camel address into vector
-            camelPos[rand2][rand1] = true;         // array pos is alwys arr[y][x]
+        if(cnt > 20){
+            cout << "overflow" << " " << CamelVec.size() << endl;
+            break;
         }
     }while(hasEntity);
 }

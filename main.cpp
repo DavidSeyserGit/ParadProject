@@ -11,13 +11,11 @@ int main() {
 
     //w1.temp_PrintMap(actPlayer);
 
-    for(int i = 0; i < 10; i++){
-        w1.menu(actPlayer);
-    }
 
-    //while(!finished){
-    //    finished = w1.menu(actPlayer);
-    //}
+
+    while(!finished){
+        finished = w1.menu(actPlayer);
+    }
 
     return 0;
 }

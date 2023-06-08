@@ -25,7 +25,7 @@ private:
     void init();
     enum CONTENT { DESERT, PLAIN , CITY , MILL , FIELD , OASIS , COIN, PLAYER, CAMEL};
     const char symbols[9] = {'~', ' ','H', static_cast<char>(207), static_cast<char>(178), static_cast<char>(254), '$', 'i', 'm' };
-    const int colors[9] = {239, 32,32,32,46, 41, 224, 12, 230};
+    const int colors[9] = {239, 32,32,32,46, 41, 224, 12, 235};
 
 	const int prices[4] = {0,-8, -4,-2}; 	//(0) nothing, city, mill, field
 
