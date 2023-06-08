@@ -115,6 +115,10 @@ void world::interact(player &actPlayer, int choice){
     if(!(moves % 6) && !actPlayer.getSatiatedValue()) actPlayer.incCoins(-3);  //every sixth move player needs to buy food -> later controlled by difficulty modifier
 
     switch(choice){
+        default:
+            cout << "You should not be in here .... what did you do? \n ERROR world::interact" << endl;
+            break;
+
         case 0:
             actPlayer.move();
             actPlayer.setSatiatedValue(CamelDetect(actPlayer), moves);//-> check player and camel -> return boolean true = "is on me"
@@ -159,9 +163,7 @@ void world::interact(player &actPlayer, int choice){
                 }
 			}while(answer == 'y');
              break;
-        /*default: // --- does not want to work
-            cout << "You should not be in here .... what did you do? \n ERROR world::interact" << endl;
-            break;*/
+
     }
 }
 
