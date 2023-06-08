@@ -217,9 +217,14 @@ void world::EntitySpawn(){
         int rand1 = rand() % 5; // generates values between 0 and 4
         int rand2 = rand() % 5;
         if(!wPatch[rand1][rand2].getIsOasis()){
-            for(vector<Camel*>::iterator it = CamelVec.begin(); it != CamelVec.end(); ++it)
+            for(Camel* camel : CamelVec)
             {
                 wPatch[rand1][rand2].getIsOasis();
+                int CamelPosX = camel->getXglo();
+                int CamelPosY = camel->getYglo();
+
+                if (CamelPosX == rand1 && CamelPosY == rand2) hasEntity = true;
+                else hasEntity = false;
                 //ich will auf meinen elemente zugreifen und die pos abfragen
                 //sofern keine der pos = rand1 && rand2 sind return has Entites = false
             }
