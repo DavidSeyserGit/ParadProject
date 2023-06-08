@@ -6,6 +6,7 @@
 #include "player.h"
 #include "patch.h"
 #include "camel.h"
+#include "CamelAdult.h"
 // #include <windows.h>   // WinApi header for output
 #include <iostream>
 #include <ctime>
@@ -217,7 +218,7 @@ void world::EntitySpawn(){
         int rand1 = rand() % 5; // generates values between 0 and 4
         int rand2 = rand() % 5;
         if(!wPatch[rand1][rand2].getIsOasis()){
-            for(Camel* camel : CamelVec)
+            for(CamelAdult* camel : CamelVec)
             {
                 wPatch[rand1][rand2].getIsOasis();
                 int CamelPosX = camel->getXglo();
@@ -225,14 +226,12 @@ void world::EntitySpawn(){
 
                 if (CamelPosX == rand1 && CamelPosY == rand2) hasEntity = true;
                 else hasEntity = false;
-                //ich will auf meinen elemente zugreifen und die pos abfragen
-                //sofern keine der pos = rand1 && rand2 sind return has Entites = false
             }
         }
 
         if(!hasEntity){
-            Camel* camel1 = new Camel(rand1, rand2);
-            CamelVec.push_back(camel1);
+            auto* camel1 = new Camel(rand1, rand2);
+            CamelVec.push_back(new CamelAdult());
         }
     }while(hasEntity);
 

@@ -10,6 +10,7 @@
 #include "patch.h"
 #include "player.h"
 #include "Camel.h"
+#include "CamelAdult.h"
 #include <vector>
 using namespace std;
 
@@ -30,7 +31,7 @@ class world {
     private:
         static const int goal;      // gloCoins to finish game
         patch wPatch[5][5];
-        vector<Camel*> CamelVec;//
+        vector<CamelAdult*> CamelVec;//
         int gloCoins;          //global gloCoins
         int gloCamels;
 };

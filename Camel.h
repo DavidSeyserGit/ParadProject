@@ -13,8 +13,9 @@ public:
     virtual ~Camel();
     int getXglo() override {return  xGlo;}
     int getYglo() override {return yGlo;}
-    bool playerDetection(int PlayerX, int PlayerY);
-private:
+    int getAge() {return age;};
+    bool playerDetection(int PlayerX, int PlayerY) override;
+protected:
     int xGlo;
     int yGlo;
     const int xLoc = 1;
