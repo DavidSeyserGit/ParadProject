@@ -97,7 +97,7 @@ bool world::menu(player &actPlayer) {
     }
 
     //uses int rounding 0 - (max) 24 camels -> 12 -(0 - 12) chance-% => the more camels the lower chance
-    int chance = 30 - gloCamels / 2; //could be changed in dependency to difficulty modifier
+    int chance = 20 - gloCamels / 2; //could be changed in dependency to difficulty modifier
     if (dice(chance))
         EntitySpawn();
 
