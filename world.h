@@ -10,6 +10,7 @@
 #include "patch.h"
 #include "player.h"
 #include "Camel.h"
+#include "PUPCoinBoost.h"
 #include <vector>
 using namespace std;
 
@@ -21,14 +22,15 @@ public:
     void printMap(player& actPlayer);
     bool dice(int);             // dice on isOasis and hasCoin and ...
     bool menu(player &actPlayer);           // with function pointer ? ->to move interact etc.
-    void interact(player &actPlayer, int);    // for interacting with a patch
+    void interact(player &actPlayer, int, PUPCoinBoost& coinBoostPUP);    // for interacting with a patch
     void coinRegen();           // gets global value and
     void EntitySpawn();
     bool CamelDetect(player& actplayer);
     int calculateIncome();
     void setEndlessMode(){endlessMode = true;}
+    static const int goal; //player coin goal -> could be changed in dependency to difficulty modifier
 protected:
-    static const int goal;      //player coin goal -> could be changed in dependency to difficulty modifier
+
     patch wPatch[5][5];
     vector<Camel*> CamelVec;//
     int gloCoins;           //global gloCoins

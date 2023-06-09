@@ -6,12 +6,16 @@
 #include "player.h"
 #include "patch.h"
 #include "Camel.h"
+#include "PUPCoinBoost.h"
 // #include <windows.h>   // WinApi header for output
 #include <iostream>
 #include <ctime>
 
 using namespace std;
 const int world::goal = 100;
+//created a fixed PowerUp to test out functions and the program
+PUPCoinBoost coinBoostPUP(1);
+
 // constructor
 // map gen by patch construction 5x5 patches with 3x3 fields so 5x3 = 15x15 playing field -> done in world.h and patch.cpp
 // currently all sizes are set and are not made variable (e.g. by using size init var.s)
@@ -97,7 +101,7 @@ bool world::menu(player &actPlayer) {
     if (dice(chance))
         EntitySpawn();
 
-    interact(actPlayer, choice);
+    interact(actPlayer, choice, coinBoostPUP );
     if (gloCoins < 35) coinRegen();       // would like to use "35" -> this->goal / 2 + x (x=10) -> could be changed in dependency to difficulty modifier
 
     if(!endlessMode){
@@ -114,8 +118,8 @@ bool world::menu(player &actPlayer) {
 }
 
 // interaction with world menu passes choice -> 0=move 1=build
-void world::interact(player &actPlayer, int choice){
-    int static moves = 0;   //more or less round counter
+void world::interact(player &actPlayer, int choice,PUPCoinBoost &coinBoostPUP){
+    int static moves = 0;//more or less round counter
     moves++;
     //every sixth move player needs to buy food -> could be changed in dependency to difficulty modifier
     if(!(moves % 6)){
@@ -132,7 +136,8 @@ void world::interact(player &actPlayer, int choice){
             actPlayer.move();
             // tells wPatch where player is and asks if player is on a coin -> collects it -> increase player money
             if(wPatch[actPlayer.getYglo()][actPlayer.getXglo()].getCoin(actPlayer.getXloc(),actPlayer.getYloc())){
-                actPlayer.incCoins(1);
+                //if player picked up a CoinBoostPUP he now gets more money per coin
+                actPlayer.incCoins(1 * coinBoostPUP.getBoostAmount());
                 gloCoins--;
             }
             //-> check player and camel -> return boolean true = "is on me"

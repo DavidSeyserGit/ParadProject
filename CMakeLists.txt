@@ -14,4 +14,4 @@ add_executable(ParadProjekt-master
         utility.cpp
         utility.h
         world.cpp
-        world.h entities.cpp entities.h Camel.cpp Camel.h)
+        world.h entities.cpp entities.h Camel.cpp Camel.h PowerUps.h PUPCoinBoost.h PUPCoinBoost.cpp PowerUps.cpp)

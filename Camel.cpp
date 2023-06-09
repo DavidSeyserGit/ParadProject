@@ -14,9 +14,9 @@ Camel::Camel(int gloX, int gloY) {
     xGlo = gloX;
     yGlo = gloY;
 }
-
 Camel::~Camel(){
 }
+
 
 
 bool Camel::playerDetection(int PlayerX, int PlayerY){
