@@ -1,4 +1,5 @@
 #include "entities.h"
+
 void Camel::init (){
     age = 0;
 }

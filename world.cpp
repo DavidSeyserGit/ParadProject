@@ -12,7 +12,7 @@
 #include <ctime>
 
 using namespace std;
-const int world::goal = 100;
+const int world::goal = 30;
 //created a fixed PowerUp to test out functions and the program
 PUPCoinBoost coinBoostPUP(1,1);
 
@@ -97,7 +97,7 @@ bool world::menu(player &actPlayer) {
     }
 
     //uses int rounding 0 - (max) 24 camels -> 12 -(0 - 12) chance-% => the more camels the lower chance
-    int chance = 15 - gloCamels / 2; //could be changed in dependency to difficulty modifier
+    int chance = 30 - gloCamels / 2; //could be changed in dependency to difficulty modifier
     if (dice(chance))
         EntitySpawn();
 
@@ -123,7 +123,7 @@ void world::interact(player &actPlayer, int choice,PUPCoinBoost &coinBoostPUP){
     moves++;
     //every sixth move player needs to buy food -> could be changed in dependency to difficulty modifier
     if(!(moves % 6)){
-        if( !actPlayer.getSatiatedValue()) actPlayer.incCoins(-3);
+        if( !actPlayer.getSatiatedValue()) actPlayer.incCoins(-2);
         actPlayer.incCoins(actPlayer.getIncome());
     }
 
