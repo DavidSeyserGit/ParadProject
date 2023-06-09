@@ -5,8 +5,8 @@
 #include "world.h"
 #include "player.h"
 #include "patch.h"
-#include "Camel.h"
-#include "PUPCoinBoost.h"
+#include "entities.h"
+#include "PowerUps.h"
 // #include <windows.h>   // WinApi header for output
 #include <iostream>
 #include <ctime>
@@ -14,7 +14,7 @@
 using namespace std;
 const int world::goal = 100;
 //created a fixed PowerUp to test out functions and the program
-PUPCoinBoost coinBoostPUP(1);
+PUPCoinBoost coinBoostPUP(1,1);
 
 // constructor
 // map gen by patch construction 5x5 patches with 3x3 fields so 5x3 = 15x15 playing field -> done in world.h and patch.cpp
@@ -97,7 +97,7 @@ bool world::menu(player &actPlayer) {
     }
 
     //uses int rounding 0 - (max) 24 camels -> 12 -(0 - 12) chance-% => the more camels the lower chance
-    int chance = 5 - gloCamels / 2; //could be changed in dependency to difficulty modifier
+    int chance = 15 - gloCamels / 2; //could be changed in dependency to difficulty modifier
     if (dice(chance))
         EntitySpawn();
 
@@ -206,7 +206,6 @@ void world::EntitySpawn(){
             }
         }
         if(cnt > 20){
-            cout << "overflow" << " " << CamelVec.size() << endl;
             break;
         }
     }while(hasEntity);
@@ -237,4 +236,41 @@ int world::calculateIncome(){
         }
     }
     return sum;
+}
+
+void world::PUPCoinBoostSpawn() { //can be further modified to spawn every possible PowerUp not only CoinBoosts
+    bool hasCoinBoost;
+    int rand1 = rand() % 5; // generates values between 0 and 4
+    int rand2 = rand() % 5;
+
+    if (!(wPatch[rand2][rand1].getIsOasis())) {
+        for (PUPCoinBoost *boost: CoinBoostVec) {
+            int BoostPosX = boost->getXGlo();
+            int BoostPosY = boost->getYGlo();
+
+            if (BoostPosX == rand1 && BoostPosY == rand2) {
+                hasCoinBoost = true;
+                break;
+            }
+        }
+        if (!hasCoinBoost) {
+            auto *coinBoost = new PUPCoinBoost(rand1, rand2);
+            CoinBoostVec.push_back(coinBoost);
+        }
+    }
+}
+
+bool world::CoinBoostDetect(player& actplayer){ //can be further modified to detect every possible PowerUp not only CoinBoosts
+    for (auto it = CoinBoostVec.begin(); it != CoinBoostVec.end(); ++it) {
+        PUPCoinBoost* boost = *it;
+        int BoostPosX = boost->getXGlo();
+        int BoostPosY = boost->getYGlo();
+
+        if (BoostPosX == actplayer.getXglo() && BoostPosY == actplayer.getYglo()) { //everytime the player is on the same patch as the camel it gets deleted// could later be changed to "rounds" instead of "6"
+            delete boost;              //camel delete on current gloX && gloY
+            CoinBoostVec.erase(it); //camel pointer deleted
+            return true;
+        }
+    }
+    return false;
 }

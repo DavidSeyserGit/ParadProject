@@ -4,7 +4,7 @@
 
 #ifndef PARADPROJEKT_MASTER_POWERUPS_H
 #define PARADPROJEKT_MASTER_POWERUPS_H
-
+#include "Player.h"
 
 class PowerUps {
 public:
@@ -19,5 +19,30 @@ protected://duration of the PowerUp
     bool active;
 };
 
+
+class PUPCoinBoost: public PowerUps {
+public:
+    PUPCoinBoost(int , int);
+    virtual ~PUPCoinBoost();
+    void setBoostAmount(int, int);
+    void setDuration(int) override;
+
+
+    int getActive();
+    int getBoostAmount();
+    int getXGlo();
+    int getYGlo();
+
+protected:
+    void givePlayerCoins(player &actPlayer);
+    void generateRandomBlessing();
+
+    int boostDuration;
+    int boostAmount;
+    int blessing;
+    int xPos;
+    int yPos;
+
+};
 
 #endif //PARADPROJEKT_MASTER_POWERUPS_H
