@@ -1,7 +1,6 @@
 //
 // Created by rapha on 05.04.2023.
-// contains player related class and con-/ destructor
-//
+// last edit: 11.06.2023
 
 #ifndef PARADProjekt_WORLD_H
 #define PARADProjekt_WORLD_H
@@ -41,6 +40,5 @@ protected:
     bool camelPos[5][5];    //shows true on global map if camel is present
     bool endlessMode;
 };
-
 
 #endif //PARADProjekt_WORLD_H

@@ -1,6 +1,6 @@
 //
 // Created by david on 09.06.2023.
-//
+// last edit: 11.06.2023
 
 #include "PowerUps.h"
 #include "world.h"
@@ -19,6 +19,7 @@ void PowerUps::setActive() {
 PUPCoinBoost::PUPCoinBoost(int gloX, int gloY) {
     xPos = gloX;
     yPos = gloY;
+    boostAmount = 1;
 }
 
 PUPCoinBoost::~PUPCoinBoost() {
@@ -27,7 +28,6 @@ PUPCoinBoost::~PUPCoinBoost() {
 
 //calculate the amount of Coinboost a player gets
 void PUPCoinBoost::setBoostAmount(int round, int currentCoins) { //not my proudest function but it works might want to find a function for that
-    boostAmount = 1;
     if(active) {
         boostAmount = (round / currentCoins);
         if (boostAmount < 1){

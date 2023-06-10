@@ -1,18 +1,16 @@
 //
 // Created by rapha on 05.04.2023.
-//
+// last edit: 11.06.2023
 
 #include "world.h"
 #include "player.h"
 #include "patch.h"
 #include "entities.h"
 #include "PowerUps.h"
-// #include <windows.h>   // WinApi header for output
 #include <iostream>
-#include <ctime>
 
 using namespace std;
-const int world::goal = 30;
+const int world::goal = 50;
 //created a fixed PowerUp to test out functions and the program
 PUPCoinBoost coinBoostPUP(1,1);
 
@@ -30,11 +28,11 @@ world::world(){
             if(! wPatch[y][x].getIsOasis()) gloCoins++;     // since every desert patch gets a coin on init -> glo coins increase
         }
     }
+    for(auto i = 0; i<5; i++){coinRegen();} //could be changed in dependency to difficulty modifier
 }
 // destructor
 world::~world(){}
-void world::printMap(player& actPlayer){
-    cout << endl;
+void world::printMap(player &actPlayer){
     for(int paY = 0; paY < 5; paY++){           //iter over patch y
         for(int row = 0; row < 3; row++){       //iter over local row
             for(int paX = 0; paX < 5; paX++){   //iter over patch x
@@ -58,34 +56,30 @@ bool world::dice( int percentage){
 // displays the action menu to the player
 //  -> in the future it will have to be a more advanced logic
 bool world::menu(player &actPlayer) {
-    int choice = -1;
+    int choice = 2;
 
     int inOasis = wPatch[actPlayer.getYglo()][actPlayer.getXglo()].getIsOasis(); //check if player is in oasis
-    int gloCamels = CamelVec.size(); //größe des vektors
+    gloCamels = CamelVec.size(); //größe des vektors
 
     printMap(actPlayer);
 
     if(inOasis && actPlayer.getCoins() >= 2){       // only if player is in an Oasis and has more than 2 coins allow to build
         cout << "[0] move \t\t\t" << "current money: " << actPlayer.getCoins() <<"$" << endl;
         cout << "current position \t\t x | y: "     << actPlayer.getXloc() + 3*actPlayer.getXglo() << " | "
-             << actPlayer.getYloc() + 3*actPlayer.getXglo() << endl;
+             << actPlayer.getYloc() + 3*actPlayer.getYglo() << endl;
         cout << "[1] build \t\t\t"  << "oasis fields: "
-             << wPatch[actPlayer.getXglo()][actPlayer.getYglo()].getFields() << endl; // what does this do again ...
-        /*
-         * prototype was already changed
-         * maybe add fun game design for menu with win.h
-         * --------------------------------------------
+             << wPatch[actPlayer.getXglo()][actPlayer.getXglo()].getFields() << endl;
+        /* --------------------------------------------
          * [0] move                 current money: x $
-         * [1] build                current paIncome +/- x $ per round -> where to put this function ... and how to calculate
-         * position xPa yPa xloc(+1 ?) yloc -> if interesting also calculated global x|y -> "(xPa) * 3 + xloc (if(xPa>0) +1)"
-         * --------------------------------------------
-        */
+         * current position         x | y : xyz | xyz
+         * [1] build                oasis fields: xyz
+         * --------------------------------------------*/
+
         while(choice != 1 && choice != 0){
             string tempChoice = " ";
             cout << "choice:  ";
             cin >> tempChoice;
             choice = static_cast<int>(tempChoice[0]) - 48;  //this is dirty as f*ck (ascii "0" = 48 , "1" = 49)
-            //cout << "\t inpu: " << choice << endl; --- debugging
             cin.clear();
             cout << endl;
         }
@@ -95,14 +89,13 @@ bool world::menu(player &actPlayer) {
              << actPlayer.getYloc()+1 + 3*actPlayer.getYglo() << endl;
         choice = 0;
     }
-
     //uses int rounding 0 - (max) 24 camels -> 12 -(0 - 12) chance-% => the more camels the lower chance
-    int chance = 20 - gloCamels / 2; //could be changed in dependency to difficulty modifier
+    int chance = 15 - gloCamels / 2; //could be changed in dependency to difficulty modifier
     if (dice(chance))
         EntitySpawn();
 
-    interact(actPlayer, choice, coinBoostPUP );
-    if (gloCoins < 35) coinRegen();       // would like to use "35" -> this->goal / 2 + x (x=10) -> could be changed in dependency to difficulty modifier
+    interact(actPlayer, choice, coinBoostPUP);
+    if (gloCoins < 28) coinRegen();       // would like to use "28" -> this->goal / 2 + x (x=10) -> could be changed in dependency to difficulty modifier
 
     if(!endlessMode){
         if(actPlayer.getCoins() >= goal){
@@ -119,11 +112,10 @@ bool world::menu(player &actPlayer) {
 
 // interaction with world menu passes choice -> 0=move 1=build
 void world::interact(player &actPlayer, int choice,PUPCoinBoost &coinBoostPUP){
-    int static moves = 0;//more or less round counter
-    moves++;
+    actPlayer.incRounds();
     //every sixth move player needs to buy food -> could be changed in dependency to difficulty modifier
-    if(!(moves % 6)){
-        if( !actPlayer.getSatiatedValue()) actPlayer.incCoins(-2);
+    if(!(actPlayer.getRounds() % 6)){
+        if( !actPlayer.getSatiatedValue()) actPlayer.incCoins(-3);
         actPlayer.incCoins(actPlayer.getIncome());
     }
 
@@ -136,12 +128,11 @@ void world::interact(player &actPlayer, int choice,PUPCoinBoost &coinBoostPUP){
             actPlayer.move();
             // tells wPatch where player is and asks if player is on a coin -> collects it -> increase player money
             if(wPatch[actPlayer.getYglo()][actPlayer.getXglo()].getCoin(actPlayer.getXloc(),actPlayer.getYloc())){
-                //if player picked up a CoinBoostPUP he now gets more money per coin
                 actPlayer.incCoins(1 * coinBoostPUP.getBoostAmount());
                 gloCoins--;
             }
             //-> check player and camel -> return boolean true = "is on me"
-            actPlayer.setSatiatedValue(CamelDetect(actPlayer), moves);
+            actPlayer.setSatiatedValue(CamelDetect(actPlayer), actPlayer.getRounds());
             break;
         case 1:
             char answer;
@@ -191,10 +182,10 @@ void world::EntitySpawn(){
         int rand2 = rand() % 5;
         if(!(wPatch[rand2][rand1].getIsOasis())){
             for(Camel* camel : CamelVec){
-                int CamelPosX = camel->getXglo();
-                int CamelPosY = camel->getYglo();
+                int camelPosX = camel->getXglo();
+                int camelPosY = camel->getYglo();
 
-                if (CamelPosX == rand1 && CamelPosY == rand2){
+                if (camelPosX == rand1 && camelPosY == rand2){
                     hasEntity = true;
                     break;
                 }
@@ -214,14 +205,14 @@ void world::EntitySpawn(){
 bool world::CamelDetect(player& actplayer) {
     for (auto it = CamelVec.begin(); it != CamelVec.end(); ++it) {
         Camel* camel = *it;
-        int CamelPosX = camel->getXglo();
-        int CamelPosY = camel->getYglo();
+        int camelPosX = camel->getXglo();
+        int camelPosY = camel->getYglo();
 
-        if (CamelPosX == actplayer.getXglo() && CamelPosY == actplayer.getYglo()) { //everytime the player is on the same patch as the camel it gets deleted
-            cout << "\n Player ate a camel... Jummy ... saturated for 6 rounds" << endl;    // could later be changed to "rounds" instead of "6"
+        if (camelPosX == actplayer.getXglo() && camelPosY == actplayer.getYglo()) { //everytime the player is on the same patch as the camel it gets deleted
+            cout << "Player ate a camel... Jummy ... saturated for 6 rounds" << endl;    // could later be changed to "rounds" instead of "6"
             delete camel;              //camel delete on current gloX && gloY
-            camelPos[CamelPosY][CamelPosX] = false;
             CamelVec.erase(it); //camel pointer deleted
+            camelPos[camelPosY][camelPosX] = false;
             return true;
         }
     }
@@ -244,31 +235,31 @@ void world::PUPCoinBoostSpawn() { //can be further modified to spawn every possi
     int rand2 = rand() % 5;
 
     if (!(wPatch[rand2][rand1].getIsOasis())) {
-        for (PUPCoinBoost *boost: CoinBoostVec) {
-            int BoostPosX = boost->getXGlo();
-            int BoostPosY = boost->getYGlo();
+        for (PUPCoinBoost *boost: coinBoostVec) {
+            int boostPosX = boost->getXGlo();
+            int boostPosY = boost->getYGlo();
 
-            if (BoostPosX == rand1 && BoostPosY == rand2) {
+            if (boostPosX == rand1 && boostPosY == rand2) {
                 hasCoinBoost = true;
                 break;
             }
         }
         if (!hasCoinBoost) {
             auto *coinBoost = new PUPCoinBoost(rand1, rand2);
-            CoinBoostVec.push_back(coinBoost);
+            coinBoostVec.push_back(coinBoost);
         }
     }
 }
 
 bool world::CoinBoostDetect(player& actplayer){ //can be further modified to detect every possible PowerUp not only CoinBoosts
-    for (auto it = CoinBoostVec.begin(); it != CoinBoostVec.end(); ++it) {
+    for (auto it = coinBoostVec.begin(); it != coinBoostVec.end(); ++it) {
         PUPCoinBoost* boost = *it;
-        int BoostPosX = boost->getXGlo();
-        int BoostPosY = boost->getYGlo();
+        int boostPosX = boost->getXGlo();
+        int boostPosY = boost->getYGlo();
 
-        if (BoostPosX == actplayer.getXglo() && BoostPosY == actplayer.getYglo()) { //everytime the player is on the same patch as the camel it gets deleted// could later be changed to "rounds" instead of "6"
+        if (boostPosX == actplayer.getXglo() && boostPosY == actplayer.getYglo()) { //everytime the player is on the same patch as the camel it gets deleted// could later be changed to "rounds" instead of "6"
             delete boost;              //camel delete on current gloX && gloY
-            CoinBoostVec.erase(it); //camel pointer deleted
+            coinBoostVec.erase(it); //camel pointer deleted
             return true;
         }
     }

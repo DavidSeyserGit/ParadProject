@@ -1,6 +1,6 @@
 //
 // Created by rapha on 06.04.2023.
-//
+// last edit: 11.06.2023
 
 #include "patch.h"
 #include <iostream>
@@ -22,7 +22,7 @@ void patch::init(){
 patch::patch() { //default
     init();
 
-    if(rand()%100 < 20 && gloOasis < 5){
+    if(rand()%100 < 15 && gloOasis < 4){
         isOasis = true;
         // default: filled with ' ' PLAIN
         patchMap[1][1] = OASIS;
@@ -100,15 +100,15 @@ int patch::build(int playerCoins){
     bool optionIsAvailable[4] = {true,false,false,false}; 		//this exists to limit player choices depending on requirements
     int fieldPos[5] = {0,2,0,1,2};  //helps to place buildings
 
-    if(!(hasCity || playerCoins < prices[1] || fields < 2)){     // option to build city
+    if(!(hasCity || playerCoins < -prices[1] || fields < 2)){     // option to build city
         cout << "[1] city \t" << "cost: " << prices[1] << "$ \t" << "requires min. 2 fields" << endl;
         optionIsAvailable[1] = true;
     }
-    if(!(mills == 2 || playerCoins < prices[2] || !fields)){      // option to build mills
+    if(!(mills == 2 || playerCoins < -prices[2] || !fields)){      // option to build mills
         cout << "[2] mill \t" << "cost: " << prices[2] << "$ \t" << "requires min. 1 field" << endl;
         optionIsAvailable[2] = true;
     }
-    if(!(fields == 5 || playerCoins < prices[3])){               // it seemed easyier to make positive logic and negating it
+    if(!(fields == 5 || playerCoins < -prices[3])){               // it seemed easyier to make positive logic and negating it
         cout << "[3] field \t" << "cost: " << prices[3] << "$ \t" << endl;
         optionIsAvailable[3] = true;
     }
@@ -148,6 +148,6 @@ int patch::build(int playerCoins){
             cout << "You should not be in here .... what did you do? \n ERROR patch::build" << endl;
             break;
     }
-    paIncome = hasCity * 4 + (mills * mills + 1) * fields; //could be changed in dependency to difficulty modifier
+    paIncome = static_cast<int>( 0.8 * (hasCity * 4 + (mills * mills + 1) * fields)); //could be changed in dependency to difficulty modifier
     return prices[answer];
 }

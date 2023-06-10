@@ -1,3 +1,7 @@
+//
+// Created by david on 05.06.2023.
+// last edit: 11.06.2023
+
 #include "entities.h"
 
 void Camel::init (){

@@ -1,6 +1,6 @@
 //
 // Created by rapha on 05.04.2023.
-//
+// last edit: 11.06.2023
 
 #include "player.h"
 #include <iostream>
@@ -9,13 +9,15 @@ using namespace std;
 
 void player::init(){
     //cout << "Player Default" << endl; would like to write to "warning"
-    xCoord = 0;
-    yCoord = 0;
+    xCoord = rand() % 3;
+    yCoord = rand() % 3;
     charNam = "EMPTY";
-    xCoordPa = 0;
-    yCoordPa = 0;
+    xCoordPa = rand() % 3 + 1;
+    yCoordPa = rand() % 3 + 1;
     myCoins = 10;   //could be changed in dependency to difficulty modifier
     income = 0;
+    rounds = 0;
+    latMeal = 0;
 }
 
 player::player(){
@@ -41,7 +43,7 @@ void player::move(){
     while(checksum == (xCoord + yCoord)){
         // asking for user input ...
         while(true){
-            cout << "w, a, s, d  :  ";
+            cout << "w, a, s, d  or i, j, k, l :  ";
             if (std::cin >> inp) break;
             else {
                 std::cin.clear();
@@ -49,10 +51,10 @@ void player::move(){
         }
         cout << endl;
 
-        if(inp == 'w') --yCoord;
-        if(inp == 'a') --xCoord;
-        if(inp == 's') ++yCoord;
-        if(inp == 'd') ++xCoord;
+        if(inp == 'w' || inp == 'i') --yCoord;
+        if(inp == 'a' || inp == 'j') --xCoord;
+        if(inp == 's' || inp == 'k') ++yCoord;
+        if(inp == 'd' || inp == 'l') ++xCoord;
     }
     if(yCoord > 2){
         ++yCoordPa;
@@ -88,15 +90,12 @@ void player::move(){
     }
 }
 void player::setSatiatedValue(bool satiation, int actRound) { //gets the value from Camel::playerDetection -> Ture : player detected -> player satiated
-    static int munchTime = 0;
     //round in which camel gets fed to player
     if (satiation) {
         satiated = satiation;
-        munchTime = actRound;
-        cout << "Munch Munch Munch" << endl;
+        latMeal = actRound;
     }
-    if((actRound - munchTime) >= 6 && satiated){
+    if((actRound - latMeal) >= 6 && satiated){
         satiated = false;
     }
-    cout << (actRound - munchTime) << endl;
 }
