@@ -9,18 +9,27 @@ int main() {
     srand(time(nullptr));
     bool finished = false;
 
-    player actPlayer("Number_1");
-    world w1;
+    player actPlayer1("Number_1");
+    player actPlayer2("Number_2");
+    world actWorld;
 
-    while(!finished){
-        finished = w1.menu(actPlayer);
-        if(finished){
-            int answer;
-            cout << "Do you want to continue to endless mode ? ";
-            cin >> answer;
-            if(answer == static_cast<int>('Y') || answer == static_cast<int>('y') || answer == 1){
-                w1.setEndlessMode();
-                finished = false;
+    while (!finished) {
+        finished = (actWorld.menu(actPlayer1) || actWorld.menu(actPlayer2)) ;
+        //finished = actWorld.menu(actPlayer1);
+
+        while (finished) {
+            char answer;
+            cout << "Do you want to continue to endless mode ?  y/n :";
+            if (std::cin >> answer && (answer == 'y' || answer == 'n')) {
+                if (answer == 'y') {
+                    actWorld.setEndlessMode();
+                    finished = false;
+                }
+                break;
+            }
+            else {
+                cout << "check input !" << endl; //--- this is also not clean
+                std::cin.clear();
             }
         }
     }

@@ -11,8 +11,9 @@
 
 using namespace std;
 const int world::goal = 50;
+
 //created a fixed PowerUp to test out functions and the program
-PUPCoinBoost coinBoostPUP(1,1);
+PUPCoinBoost coinBoostPUP(1, 1);
 
 // constructor
 // map gen by patch construction 5x5 patches with 3x3 fields so 5x3 = 15x15 playing field -> done in world.h and patch.cpp
@@ -68,7 +69,7 @@ bool world::menu(player &actPlayer) {
         cout << "current position \t\t x | y: "     << actPlayer.getXloc() + 3*actPlayer.getXglo() << " | "
              << actPlayer.getYloc() + 3*actPlayer.getYglo() << endl;
         cout << "[1] build \t\t\t"  << "oasis fields: "
-             << wPatch[actPlayer.getXglo()][actPlayer.getXglo()].getFields() << endl;
+             << wPatch[actPlayer.getXglo()][actPlayer.getYglo()].getFields() << endl;
         /* --------------------------------------------
          * [0] move                 current money: x $
          * current position         x | y : xyz | xyz

@@ -34,7 +34,7 @@ protected:
 
     patch wPatch[5][5];
     vector<Camel*> CamelVec;
-    vector<PUPCoinBoost*> CoinBoostVec;//
+    vector<PUPCoinBoost*> coinBoostVec;
     int gloCoins;           //global gloCoins
     int gloCamels;
     bool camelPos[5][5];    //shows true on global map if camel is present
