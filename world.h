@@ -8,7 +8,7 @@
 #include <iostream>
 #include "patch.h"
 #include "player.h"
-#include "entities.h"
+#include "IEntities.h"
 #include "PowerUps.h"
 #include <vector>
 using namespace std;
@@ -24,7 +24,7 @@ public:
     void interact(player &actPlayer, int, PUPCoinBoost& coinBoostPUP);    // for interacting with a patch
     void coinRegen();           // gets global value and
     void EntitySpawn();
-    bool CamelDetect(player& actplayer);
+    bool EntityDetect(player& actplayer);
     void PUPCoinBoostSpawn();
     bool CoinBoostDetect(player& actplayer);
     int calculateIncome();

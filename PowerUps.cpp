@@ -27,16 +27,13 @@ PUPCoinBoost::~PUPCoinBoost() {
 
 
 //calculate the amount of Coinboost a player gets
-void PUPCoinBoost::setBoostAmount(int round, int currentCoins) { //not my proudest function but it works might want to find a function for that
-    if(active) {
-        boostAmount = (round / currentCoins);
-        if (boostAmount < 1){
-            boostAmount = 1;
-        } else if (boostAmount > 3) {
-            boostAmount = 3;
-        } else boostAmount = 1;
+void PUPCoinBoost::setBoostAmount(int round, int currentCoins) {
+    if (active) {
+        int boostFactor = 1 - (currentCoins/(round+20));
+        boostAmount = std::max(1, std::min(3, (3 * boostFactor))); //sets min = 1 and max = 3
     }
 }
+
 
 int PUPCoinBoost::getActive() {
     return active;

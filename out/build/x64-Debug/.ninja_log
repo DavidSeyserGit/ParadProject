@@ -1,0 +1,10 @@
+# ninja log v5
+8	53	7082604022532575	CMakeFiles/ParadProjekt-master.dir/entities.cpp.obj	b740909ce9db50fc
+17	377	7082605148344720	CMakeFiles/ParadProjekt-master.dir/PowerUps.cpp.obj	c6360f9b771b667c
+15	846	7081813128705433	CMakeFiles/ParadProjekt-master.dir/player.cpp.obj	c82f4e368ba31ba5
+9	379	7082605148394761	CMakeFiles/ParadProjekt-master.dir/main.cpp.obj	e75cc06df8574aa
+31	1125	7081789844637635	CMakeFiles/ParadProjekt-master.dir/patch.cpp.obj	e4cfefcc20a7c2ab
+13	393	7082605148554897	CMakeFiles/ParadProjekt-master.dir/world.cpp.obj	2cbb4559a7834921
+394	543	7082605149730943	ParadProjekt-master.exe	1c6eb5fd0fdd5350
+8	323	7082614337782138	CMakeFiles/ParadProjekt-master.dir/IEntities.cpp.obj	ae158c3d92f63485
+323	468	7082614338888198	ParadProjekt-master.exe	9fb4da85ed1831ed

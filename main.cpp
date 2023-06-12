@@ -10,12 +10,12 @@ int main() {
     bool finished = false;
 
     player actPlayer1("Number_1");
-    player actPlayer2("Number_2");
+    //player actPlayer2("Number_2");
     world actWorld;
 
     while (!finished) {
-        finished = (actWorld.menu(actPlayer1) || actWorld.menu(actPlayer2)) ;
-        //finished = actWorld.menu(actPlayer1);
+        //finished = (actWorld.menu(actPlayer1) || actWorld.menu(actPlayer2)) ;
+        finished = actWorld.menu(actPlayer1);
 
         while (finished) {
             char answer;

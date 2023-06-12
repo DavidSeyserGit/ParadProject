@@ -5,7 +5,7 @@
 #include "world.h"
 #include "player.h"
 #include "patch.h"
-#include "entities.h"
+#include "IEntities.h"
 #include "PowerUps.h"
 #include <iostream>
 
@@ -133,7 +133,7 @@ void world::interact(player &actPlayer, int choice,PUPCoinBoost &coinBoostPUP){
                 gloCoins--;
             }
             //-> check player and camel -> return boolean true = "is on me"
-            actPlayer.setSatiatedValue(CamelDetect(actPlayer), actPlayer.getRounds());
+            actPlayer.setSatiatedValue(EntityDetect(actPlayer), actPlayer.getRounds());
             break;
         case 1:
             char answer;
@@ -203,13 +203,14 @@ void world::EntitySpawn(){
     }while(hasEntity);
 }
 
-bool world::CamelDetect(player& actplayer) {
+bool world::EntityDetect(player& actplayer) {
     for (auto it = CamelVec.begin(); it != CamelVec.end(); ++it) {
         Camel* camel = *it;
         int camelPosX = camel->getXglo();
         int camelPosY = camel->getYglo();
+        bool collision = camel->playerDetection(actplayer.getXglo(), actplayer.getYglo()); //checks if camel and player is on the same patch
 
-        if (camelPosX == actplayer.getXglo() && camelPosY == actplayer.getYglo()) { //everytime the player is on the same patch as the camel it gets deleted
+        if (collision) { //everytime the player is on the same patch as the camel it gets deleted
             cout << "Player ate a camel... Jummy ... saturated for 6 rounds" << endl;    // could later be changed to "rounds" instead of "6"
             delete camel;              //camel delete on current gloX && gloY
             CamelVec.erase(it); //camel pointer deleted

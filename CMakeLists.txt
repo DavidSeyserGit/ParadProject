@@ -12,4 +12,4 @@ add_executable(ParadProjekt-master
         player.cpp
         player.h
         world.cpp
-        world.h entities.cpp entities.h PowerUps.h PowerUps.cpp)
+        world.h "IEntities.cpp" "IEntities.h" PowerUps.h PowerUps.cpp)
